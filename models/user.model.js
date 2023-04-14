@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
       ref: "Post",
     },
   ],
+  verified: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
