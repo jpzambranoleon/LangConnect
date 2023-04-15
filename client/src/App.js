@@ -16,32 +16,29 @@ import MUIDrawer from "./components/MUIDrawer";
 
 const mdTheme = createTheme();
 
-function PrivateRoute({ element: Component, ...rest }) {
-  const { currentUser } = useSelector((state) => state.user);
-
-  return (
-    <Route
-      {...rest}
-      element={currentUser ? Component : <Navigate to="/login" replace />}
-    />
-  );
-}
-
 function App() {
+  const { currentUser } = useSelector((state) => state.user);
   return (
     <div className="App">
       <ThemeProvider theme={mdTheme}>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
+
           <Router>
-            <MUIDrawer />
+            {currentUser && <MUIDrawer />}
             <Routes>
+              {currentUser ? (
+                <>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/forums" element={<Forums />} />
+                  <Route path="/forums/post" element={<ForumPost />} />
+                  <Route path="/settings" element={<Settings />} />
+                </>
+              ) : (
+                <Route path="/" element={<Navigate to="/login" />} />
+              )}
               <Route path="/login" element={<Login />} />
-              <Route path="/" element={<Home />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/forums" element={<Forums />} />
-              <Route path="/forums/post" element={<ForumPost />} />
-              <Route path="/settings" element={<Settings />} />
             </Routes>
           </Router>
         </Box>
