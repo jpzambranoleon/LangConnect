@@ -69,7 +69,12 @@ export default function Login() {
               id="password"
               autoComplete="current-password"
             />
-            <Button fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+            <Button
+              disableElevation
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2, borderRadius: 5 }}
+            >
               Sign In
             </Button>
             <Grid container>
