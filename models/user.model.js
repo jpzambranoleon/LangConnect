@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
       ref: "Post",
     },
   ],
-  verified: {
+  isVerified: {
     type: Boolean,
     default: false,
   },
