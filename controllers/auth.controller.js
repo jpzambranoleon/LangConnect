@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 
@@ -54,8 +54,8 @@ exports.register = async (req, res) => {
     await user.save();
 
     // Send verification email
-    req.body = { email, verificationToken };
-    await sendVerificationEmail(req, res);
+    // req.body = { email, verificationToken };
+    // await sendVerificationEmail(req, res);
 
     res
       .status(201)

@@ -20,6 +20,9 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 const PORT = process.env.PORT || 8000;
 
+// serving the frontend
+app.use("/api/auth", require("./routes/auth.routes"));
+
 app.listen(PORT, () => {
   console.log(`Backend server is running on ${PORT}`);
 });
