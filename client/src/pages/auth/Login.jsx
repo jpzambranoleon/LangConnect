@@ -11,6 +11,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { publicRequest } from "../../requestMethods";
+import { useContext, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  loginFailure,
+  loginRequest,
+  loginSuccess,
+} from "../../redux/userSlice";
+import { InfoContext } from "../../utils/InfoProvider";
 
 function Copyright(props) {
   return (
@@ -31,6 +41,32 @@ function Copyright(props) {
 }
 
 export default function Login() {
+  const { setStatus } = useContext(InfoContext);
+  const { loading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      dispatch(loginRequest());
+      const response = await publicRequest.post("/auth/login", {
+        email,
+        password,
+      });
+      dispatch(loginSuccess(response.data.user));
+      navigate("/");
+    } catch (error) {
+      let message = error.response
+        ? error.response.data.message
+        : error.message;
+      setStatus({ open: true, message: message, severity: "error" });
+      dispatch(loginFailure());
+    }
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -58,6 +94,7 @@ export default function Login() {
               label="Email Address"
               name="email"
               autoComplete="email"
+              onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
               margin="normal"
@@ -68,12 +105,14 @@ export default function Login() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
             />
             <Button
               disableElevation
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, borderRadius: 5 }}
+              onClick={handleLogin}
             >
               Sign In
             </Button>

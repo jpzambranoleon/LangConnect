@@ -69,17 +69,17 @@ exports.register = async (req, res) => {
 // Login a user
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-
+    console.log(req.body);
     // Check if email and password are provided
-    if (!email || !password) {
+
+    if (!req.body.email || !req.body.password) {
       return res
         .status(400)
         .json({ error: true, message: "Please provide email and password" });
     }
 
     // Check if user exists in the database
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res
         .status(401)
@@ -87,7 +87,10 @@ exports.login = async (req, res) => {
     }
 
     // Check if password is correct
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
     if (!passwordMatch) {
       return res
         .status(401)
@@ -103,10 +106,20 @@ exports.login = async (req, res) => {
 
     // Generate a JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+    const { password, ...others } = user._doc;
 
-    res.status(200).json({ success: true, token });
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: true, // only send cookie over HTTPS in production
+        sameSite: "strict", // disallow sending cookie on cross-origin requests
+      })
+      .status(200)
+      .json({ success: true, message: "Login success", user: { ...others } });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    res.status(500).send({
+      error: true,
+      message: error.message,
+    });
   }
 };
